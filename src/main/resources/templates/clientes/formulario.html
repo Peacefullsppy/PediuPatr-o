@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragmentos :: head('Cadastro de cliente')}"></head>
+<body><header th:replace="~{fragmentos :: topo}"></header><main>
+<a class="voltar" th:href="@{/clientes}">← Clientes</a><h1 th:text="${cliente == null ? 'Cadastrar cliente' : 'Editar cliente'}"></h1>
+<form method="post" class="painel" th:data-api="${cliente == null ? '/api/clientes' : '/api/clientes/' + cliente.id}" th:data-method="${cliente == null ? 'POST' : 'PUT'}" data-success="/clientes">
+<div class="grade"><label>Nome<input name="nome" maxlength="100" required th:value="${cliente?.nome}"></label><label>Telefone com DDD<input name="telefone" inputmode="numeric" pattern="[0-9]{10,11}" placeholder="11987654321" required th:value="${cliente?.telefone}"></label></div>
+<h2>Endereço</h2><div class="grade"><label>CEP<input name="endereco.cep" inputmode="numeric" pattern="[0-9]{8}" maxlength="8" required th:value="${cliente?.endereco?.cep}"></label><label>Logradouro<input name="endereco.logradouro" maxlength="120" required th:value="${cliente?.endereco?.logradouro}"></label><label>Número<input name="endereco.numero" maxlength="15" required th:value="${cliente?.endereco?.numero}"></label><label>Complemento<input name="endereco.complemento" maxlength="80" th:value="${cliente?.endereco?.complemento}"></label><label>Bairro<input name="endereco.bairro" maxlength="80" required th:value="${cliente?.endereco?.bairro}"></label><label>Cidade<input name="endereco.cidade" maxlength="80" required th:value="${cliente?.endereco?.cidade}"></label></div>
+<p class="feedback" role="alert"></p><button type="submit">Salvar cliente</button></form>
+<form method="post" th:if="${cliente != null}" class="painel" th:data-api="@{/api/clientes/{id}(id=${cliente.id})}" data-method="DELETE" data-success="/clientes" data-confirm="Excluir este cliente do cadastro ativo?"><p>Pedidos e registros de auditoria anteriores serão preservados.</p><p class="feedback" role="alert"></p><button class="perigo" type="submit">Excluir cliente</button></form>
+</main>
+<footer>PediuPatrão · Controle da pizzaria</footer><script th:src="@{/js/app.js}" defer></script></body></html>

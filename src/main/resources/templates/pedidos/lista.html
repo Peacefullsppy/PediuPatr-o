@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragmentos :: head('Pedidos')}"></head>
+<body><header th:replace="~{fragmentos :: topo}"></header><main>
+<div class="titulo"><div><p class="eyebrow">BALCÃO E COZINHA</p><h1>Pedidos</h1><p>Acompanhe o atendimento, da entrada à saída.</p></div>
+<a class="botao" th:href="@{/pedidos/novo}" sec:authorize="hasAnyRole('GERENTE','ATENDENTE')">Registrar pedido</a></div>
+<div class="vazio" th:if="${pagina.empty}"><h2>Nenhum pedido por aqui</h2><p>Cadastre os clientes e os produtos para começar o atendimento.</p></div>
+<div class="tabela" th:unless="${pagina.empty}"><table><thead><tr><th>Pedido</th><th>Cliente</th><th>Modalidade</th><th>Entrada</th><th>Status</th><th>Total</th><th></th></tr></thead><tbody>
+<tr th:each="p : ${pagina.content}"><td><strong th:text="${'#' + p.numero}"></strong></td><td th:text="${p.clienteNome}"></td><td th:text="${p.tipoAtendimento}"></td>
+<td><time th:datetime="${p.entradaEm}" th:text="${p.entradaEm}"></time></td><td><span class="status" th:classappend="${p.status.name()}" th:text="${p.status.descricao}"></span></td>
+<td th:text="${'R$ ' + #numbers.formatDecimal(p.total,1,'POINT',2,'COMMA')}"></td><td><a th:href="@{/pedidos/{id}(id=${p.id})}">Abrir</a></td></tr></tbody></table></div>
+<div class="paginacao"><a th:if="${pagina.hasPrevious()}" th:href="@{/pedidos(pagina=${pagina.number - 1})}">Anterior</a><span th:text="${'Página ' + (pagina.number + 1)}"></span><a th:if="${pagina.hasNext()}" th:href="@{/pedidos(pagina=${pagina.number + 1})}">Próxima</a></div>
+</main>
+<footer>PediuPatrão · Controle da pizzaria</footer><script th:src="@{/js/app.js}" defer></script></body></html>

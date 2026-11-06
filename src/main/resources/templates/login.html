@@ -1,0 +1,7 @@
+<!DOCTYPE html><html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"><head th:replace="~{fragmentos :: head('Entrar')}"></head>
+<body class="login"><main class="login-box"><div class="marca">Pediu<span>Patrão</span><small>Pedidos da casa</small></div>
+<p class="eyebrow">BEM-VINDO AO TURNO</p><h1>Vamos abrir a casa?</h1><p>Entre com sua conta para acompanhar os pedidos.</p>
+<p class="erro" role="alert" th:if="${param.error}">Login ou senha inválidos, ou conta desativada.</p><p th:if="${param.logout}">Você saiu da sua conta.</p>
+<form th:action="@{/login}" method="post"><label>Login<input name="username" autocomplete="username" required autofocus></label>
+<label>Senha<input name="password" type="password" autocomplete="current-password" required></label><button type="submit">Entrar</button></form>
+<p class="ajuda">Precisa de acesso? Peça o cadastro ao administrador.</p></main></body></html>

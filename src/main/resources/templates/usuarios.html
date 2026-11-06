@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragmentos :: head('Usuários')}"></head>
+<body><header th:replace="~{fragmentos :: topo}"></header><main>
+<p class="eyebrow">ADMINISTRAÇÃO</p><h1>Usuários</h1><p>Cada conta possui um único perfil. ADMIN não recebe as permissões exclusivas do GERENTE.</p>
+<details class="painel"><summary>Cadastrar usuário</summary><form method="post" data-api="/api/usuarios" data-success="reload"><div class="grade"><label>Nome<input name="nome" maxlength="100" required></label><label>Login<input name="login" pattern="[a-z0-9._-]{3,40}" minlength="3" maxlength="40" autocomplete="off" required></label><label>Senha<input name="senha" type="password" minlength="12" maxlength="64" autocomplete="new-password" required></label><label>Perfil<select name="perfil"><option>ATENDENTE</option><option>GERENTE</option><option>ADMIN</option></select></label></div><p class="feedback" role="alert"></p><button type="submit">Criar conta</button></form></details>
+<div class="cards"><article class="painel" th:each="u : ${usuarios}"><h2 th:text="${u.nome}"></h2><p th:text="${u.login + ' · ' + u.perfil + (u.ativo ? '' : ' · Inativo')}"></p>
+<form method="post" th:if="${u.login != #authentication.name}" th:data-api="@{/api/usuarios/{id}/perfil(id=${u.id})}" data-method="PUT" data-success="reload"><label>Perfil<select name="perfil"><option th:each="p : ${T(br.com.pediupatrao.model.Perfil).values()}" th:value="${p}" th:text="${p}" th:selected="${p == u.perfil}"></option></select></label><label>Situação<select name="ativo"><option value="true" th:selected="${u.ativo}">Ativo</option><option value="false" th:selected="${!u.ativo}">Inativo</option></select></label><p class="feedback" role="alert"></p><button type="submit">Salvar acesso</button></form><p th:if="${u.login == #authentication.name}" class="ajuda">Esta é sua conta. O próprio acesso não pode ser alterado por aqui.</p></article></div>
+</main>
+<footer>PediuPatrão · Controle da pizzaria</footer><script th:src="@{/js/app.js}" defer></script></body></html>

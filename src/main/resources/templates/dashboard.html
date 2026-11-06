@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: head('Dashboard administrativo')}"></head>
+<body>
+<header th:replace="~{fragmentos :: topo}"></header>
+<main class="dashboard-main" data-dashboard>
+  <div class="dash-heading">
+    <div>
+      <p class="eyebrow">VISÃO DO NEGÓCIO <span class="dash-eyebrow-dot" aria-hidden="true"></span> PEDIU PATRÃO</p>
+      <h1>Seu negócio, em números.</h1>
+      <p>Vendas, pedidos e produtos em uma única visão para ajudar nas decisões do dia.</p>
+    </div>
+    <div class="dash-updated" aria-live="polite">
+      <span class="dash-live-dot" aria-hidden="true"></span>
+      <span id="dash-atualizado">Aguardando dados</span>
+      <button type="button" class="dash-icon-button" id="dash-atualizar" aria-label="Atualizar indicadores" title="Atualizar agora">↻</button>
+    </div>
+  </div>
+
+  <section class="dash-filter-panel" aria-label="Filtros do dashboard">
+    <div class="dash-filter-top"><div><h2>Filtros de consulta</h2><p>Os indicadores usam os mesmos filtros.</p></div><span class="dash-period-badge" id="dash-intervalo">Últimos 30 dias</span></div>
+    <form id="dash-filtros" class="dash-filters">
+      <label>Data inicial<input id="dash-inicio" name="inicio" type="date" aria-label="Data inicial"></label>
+      <label>Data final<input id="dash-fim" name="fim" type="date" aria-label="Data final"></label>
+      <label>Etapa do pedido<select name="status" id="dash-status">
+        <option value="">Todos os status</option><option value="RECEBIDO">Recebido</option><option value="EM_PREPARACAO">Em preparação</option>
+        <option value="PRONTO">Pronto</option><option value="SAIU_PARA_ENTREGA">Saiu para entrega</option><option value="RETIRADO">Retirado</option>
+        <option value="FINALIZADO">Finalizado</option><option value="CANCELADO">Cancelado</option>
+      </select></label>
+      <label>Atendimento<select name="tipo" id="dash-tipo"><option value="">Todas as modalidades</option><option value="ENTREGA">Entrega</option><option value="RETIRADA">Retirada</option></select></label>
+      <label>Gráfico por<select name="agrupamento" id="dash-agrupamento"><option value="DIA">Dia</option><option value="SEMANA">Semana</option><option value="MES">Mês</option></select></label>
+      <div class="dash-filter-buttons"><button type="submit">Aplicar filtros</button><button type="button" class="dash-clear" id="dash-limpar">Limpar</button></div>
+    </form>
+  </section>
+
+  <div id="dash-erro" class="dash-alert" role="alert" hidden></div>
+  <section class="dash-kpis" aria-label="Indicadores gerais" aria-live="polite">
+    <article class="dash-kpi dash-kpi-primary"><div class="dash-kpi-head"><span>Faturamento</span><span class="dash-kpi-symbol">R$</span></div><strong id="dash-faturamento">—</strong><small>Somente pedidos finalizados</small><div class="dash-kpi-glow" aria-hidden="true"></div></article>
+    <article class="dash-kpi"><div class="dash-kpi-head"><span>Pedidos no período</span><span class="dash-kpi-symbol">▤</span></div><strong id="dash-total">—</strong><small><span id="dash-finalizados">—</span> finalizados</small></article>
+    <article class="dash-kpi"><div class="dash-kpi-head"><span>Ticket médio</span><span class="dash-kpi-symbol">↗</span></div><strong id="dash-ticket">—</strong><small>Por pedido finalizado</small></article>
+    <article class="dash-kpi"><div class="dash-kpi-head"><span>Em andamento</span><span class="dash-kpi-symbol">◷</span></div><strong id="dash-andamento">—</strong><small>Ainda não finalizados</small></article>
+    <article class="dash-kpi"><div class="dash-kpi-head"><span>Cancelamentos</span><span class="dash-kpi-symbol">×</span></div><strong id="dash-cancelados">—</strong><small id="dash-taxa">— de todos os pedidos</small></article>
+  </section>
+
+  <div class="dash-analytics-grid">
+    <section class="dash-panel dash-sales-panel" aria-labelledby="dash-sales-title">
+      <div class="dash-panel-header"><div><p class="dash-section-label">PERFORMANCE</p><h2 id="dash-sales-title">Evolução das vendas</h2><p>Receita dos pedidos finalizados, por data de entrada.</p></div><span class="dash-tag">Faturamento (R$)</span></div>
+      <div id="dash-chart-holder" class="dash-chart-holder"><svg id="dash-chart" viewBox="0 0 800 294" role="img" aria-label="Gráfico das vendas durante o período" preserveAspectRatio="xMidYMid meet"></svg></div>
+      <p id="dash-chart-empty" class="dash-inline-empty" hidden>Nenhuma venda finalizada para os filtros escolhidos.</p>
+    </section>
+    <section class="dash-panel dash-status-panel" aria-labelledby="dash-situacao-title">
+      <div class="dash-panel-header"><div><p class="dash-section-label">OPERAÇÃO</p><h2 id="dash-situacao-title">Situação dos pedidos</h2><p>Distribuição das etapas atuais.</p></div></div>
+      <div class="dash-donut-wrap"><div id="dash-donut" class="dash-donut" role="img" aria-label="Distribuição dos pedidos por status"><div class="dash-donut-core"><strong id="dash-donut-num">—</strong><span>pedidos</span></div></div></div>
+      <div id="dash-legenda" class="dash-status-legend" aria-label="Legenda do gráfico"></div>
+    </section>
+  </div>
+
+  <div class="dash-analytics-grid dash-bottom-grid">
+    <section class="dash-panel" aria-labelledby="dash-produtos-title"><div class="dash-panel-header"><div><p class="dash-section-label">CARDÁPIO</p><h2 id="dash-produtos-title">Produtos mais vendidos</h2><p>Ranking por unidades em pedidos finalizados.</p></div><span class="dash-tag">Top 6</span></div><div id="dash-produtos" class="dash-products" aria-live="polite"><p class="dash-inline-empty">Carregando produtos…</p></div></section>
+    <section class="dash-panel" aria-labelledby="dash-pedidos-title"><div class="dash-panel-header"><div><p class="dash-section-label">ATENDIMENTO</p><h2 id="dash-pedidos-title">Pedidos recentes</h2><p>Últimos registros dentro dos filtros.</p></div><a th:href="@{/pedidos}" class="dash-view-all">Ver todos <span aria-hidden="true">↗</span></a></div>
+      <div class="dash-table-scroll"><table class="dash-orders-table"><thead><tr><th>Pedido</th><th>Cliente</th><th>Valor</th><th>Status</th></tr></thead><tbody id="dash-pedidos"><tr><td colspan="4">Carregando pedidos…</td></tr></tbody></table></div>
+    </section>
+  </div>
+  <p class="dash-nota">Valores em reais (BRL). Vendas e ranking consideram apenas pedidos finalizados. Os períodos usam a data de entrada do pedido, no fuso de São Paulo. Atualização automática a cada 60 segundos enquanto esta aba estiver visível.</p>
+</main>
+<footer>PediuPatrão · Inteligência para a operação</footer>
+<script th:src="@{/js/dashboard.js}" defer></script>
+</body></html>

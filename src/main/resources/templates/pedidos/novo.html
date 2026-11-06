@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragmentos :: head('Registrar pedido')}"></head>
+<body><header th:replace="~{fragmentos :: topo}"></header><main>
+<a class="voltar" th:href="@{/pedidos}">← Pedidos</a><h1>Registrar pedido</h1><p>Os preços do cardápio são conferidos ao salvar.</p>
+<form method="post" data-api="/api/pedidos" data-kind="pedido" data-success="/pedidos/{id}" class="painel">
+<div class="grade"><label>Cliente<select name="clienteId" required><option value="">Selecione</option><option th:each="c : ${clientes}" th:value="${c.id}" th:text="${c.nome + ' · ' + c.telefone}"></option></select></label>
+<label>Atendimento<select name="tipoAtendimento"><option value="RETIRADA">Retirada no balcão</option><option value="ENTREGA">Entrega no endereço do cliente</option></select></label></div>
+<section th:replace="~{fragmentos :: itens}"></section><p class="feedback" role="alert"></p><button type="submit">Registrar pedido</button></form>
+</main>
+<footer>PediuPatrão · Controle da pizzaria</footer><script th:src="@{/js/app.js}" defer></script></body></html>

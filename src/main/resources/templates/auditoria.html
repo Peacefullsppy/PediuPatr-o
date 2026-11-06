@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragmentos :: head('Auditoria')}"></head>
+<body><header th:replace="~{fragmentos :: topo}"></header><main>
+<p class="eyebrow">HISTÓRICO DE ALTERAÇÕES</p><h1>Auditoria</h1><p>Quem alterou, quando e o que mudou. Os registros estão disponíveis somente para consulta.</p>
+<form th:action="@{/auditoria}" method="get" class="painel filtro"><label>Cadastro<select name="entidade"><option value="">Todos</option><option th:each="e : ${ {'PEDIDO','CLIENTE','USUARIO'} }" th:value="${e}" th:text="${e}" th:selected="${e == entidade}"></option></select></label><label>ID completo do registro<input name="entidadeId" th:value="${entidadeId}"></label><button type="submit">Filtrar</button></form>
+<p class="ajuda">Endereços e telefones são exibidos para conferência das alterações cadastrais. Evite compartilhar estes dados fora dessa finalidade.</p>
+<div class="vazio" th:if="${pagina.empty}">Nenhum evento encontrado para este filtro.</div>
+<article class="painel evento" th:each="r : ${pagina.content}"><div class="linha"><h2 th:text="${#strings.replace(r.operacao,'_',' ')}"></h2><time th:datetime="${r.ocorridoEm}" th:text="${r.ocorridoEm}"></time></div><p><strong th:text="${r.usuario}"></strong><span th:text="${' · ' + r.perfil + ' · ' + r.entidade}"></span><br><small th:text="${'ID: ' + r.entidadeId}"></small></p>
+<div class="tabela"><table><thead><tr><th>Campo</th><th>Valor anterior</th><th>Novo valor</th></tr></thead><tbody><tr th:each="a : ${r.alteracoes}"><td th:text="${a.campo}"></td><td th:text="${a.anterior ?: '—'}"></td><td th:text="${a.novo ?: '—'}"></td></tr></tbody></table></div><p th:if="${r.justificativa != null}" th:text="${'Justificativa: ' + r.justificativa}"></p></article>
+<div class="paginacao"><a th:if="${pagina.hasPrevious()}" th:href="@{/auditoria(pagina=${pagina.number - 1},entidade=${entidade},entidadeId=${entidadeId})}">Anterior</a><span th:text="${'Página ' + (pagina.number + 1)}"></span><a th:if="${pagina.hasNext()}" th:href="@{/auditoria(pagina=${pagina.number + 1},entidade=${entidade},entidadeId=${entidadeId})}">Próxima</a></div>
+</main>
+<footer>PediuPatrão · Controle da pizzaria</footer><script th:src="@{/js/app.js}" defer></script></body></html>

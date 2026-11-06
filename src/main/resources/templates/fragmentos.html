@@ -1,0 +1,15 @@
+<!DOCTYPE html><html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head(titulo)"><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title th:text="${titulo + ' | PediuPatrão'}">PediuPatrão</title>
+<meta name="csrf-token" th:content="${_csrf.token}"><meta name="csrf-header" th:content="${_csrf.headerName}">
+<link rel="stylesheet" th:href="@{/css/app.css}"></head>
+<body><header th:fragment="topo"><a class="marca" th:href="@{/pedidos}">Pediu<span>Patrão</span><small>Pedidos da casa</small></a>
+<nav aria-label="Menu principal"><a th:href="@{/dashboard}" sec:authorize="hasAnyRole('ADMIN','GERENTE')">Dashboard</a><a th:href="@{/pedidos}">Pedidos</a><a th:href="@{/clientes}" sec:authorize="hasAnyRole('GERENTE','ATENDENTE')">Clientes</a>
+<a th:href="@{/produtos}">Cardápio</a><a th:href="@{/usuarios}" sec:authorize="hasRole('ADMIN')">Usuários</a>
+<a th:href="@{/auditoria}" sec:authorize="hasAnyRole('ADMIN','GERENTE')">Auditoria</a></nav>
+<div class="conta"><span sec:authentication="name"></span><small sec:authorize="hasRole('ADMIN')">Administrador</small><small sec:authorize="hasRole('GERENTE')">Gerente</small><small sec:authorize="hasRole('ATENDENTE')">Atendente</small>
+<form th:action="@{/logout}" method="post"><button class="link" type="submit">Sair</button></form></div></header>
+<section th:fragment="itens" class="itens-editor"><div class="linha"><h2>Itens do pedido</h2><button type="button" class="secundario" data-add-item>Adicionar item</button></div>
+<div class="item-linha" data-item><label>Produto<select data-produto required><option value="">Selecione</option><option th:each="p : ${produtos}" th:if="${p.ativo}" th:value="${p.id}" th:text="${p.nome + ' · R$ ' + #numbers.formatDecimal(p.preco,1,'POINT',2,'COMMA')}"></option></select></label>
+<label class="quantidade">Quantidade<input data-quantidade type="number" min="1" max="99" value="1" required></label><button type="button" class="link remover" data-remove-item>Remover</button></div></section>
+</body></html>

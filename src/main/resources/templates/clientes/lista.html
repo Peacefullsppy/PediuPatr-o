@@ -1,0 +1,8 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragmentos :: head('Clientes')}"></head>
+<body><header th:replace="~{fragmentos :: topo}"></header><main>
+<div class="titulo"><div><p class="eyebrow">CADASTRO</p><h1>Clientes</h1><p>Telefones e endereços usados no atendimento.</p></div><a sec:authorize="hasRole('ATENDENTE')" class="botao" th:href="@{/clientes/novo}">Cadastrar cliente</a></div>
+<div class="vazio" th:if="${clientes.empty}">Nenhum cliente cadastrado.</div><div class="tabela" th:unless="${clientes.empty}"><table><thead><tr><th>Nome</th><th>Telefone</th><th>Endereço</th><th></th></tr></thead><tbody><tr th:each="c : ${clientes}"><td th:text="${c.nome}"></td><td th:text="${c.telefone}"></td><td th:text="${c.endereco.resumo}"></td><td><a sec:authorize="hasRole('ATENDENTE')" th:href="@{/clientes/{id}/editar(id=${c.id})}">Editar</a></td></tr></tbody></table></div>
+</main>
+<footer>PediuPatrão · Controle da pizzaria</footer><script th:src="@{/js/app.js}" defer></script></body></html>

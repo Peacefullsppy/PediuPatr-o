@@ -8,6 +8,18 @@ O arquivo `Atividade_Pratica_M1_Parte2(1)(1).docx` contém o enunciado, mas não
 
 O projeto inclui código, formulários, testes e um roteiro para a demonstração. A publicação no seu GitHub individual e a gravação do vídeo ainda precisam ser realizadas. O roteiro não substitui o vídeo.
 
+## Dashboard Administrativo (atividade complementar)
+
+Esta versão evolui o sistema de pedidos original com **Dashboard Administrativo** (RF01–RF07) integrado à mesma aplicação. O painel está em **`/dashboard`**, visível no menu apenas para **ADMIN** e **GERENTE**. Não foi criado um segundo frontend nem um banco novo.
+
+- Indicadores: faturamento de pedidos finalizados, volume de pedidos, ticket médio, andamento e cancelamento.
+- Gráficos: evolução das vendas (dia, semana ou mês), situação atual dos pedidos e ranking dos produtos mais vendidos.
+- Consultas: período, status e modalidade (entrega/retirada), com atualização manual e automática a cada 60 segundos.
+- Integração: `GET /api/dashboard` retorna todos os blocos de uma vez. Endpoints individuais permitem consultar resumo, vendas, situações, produtos e pedidos.
+- Sem dados de demonstração inventados: quando não existem pedidos, os indicadores e gráficos refletem **zero/estado vazio**. Para gerar faturamento, um GERENTE deve finalizar pedidos reais.
+
+**Documentação da nova atividade:** [análise, arquitetura, regras, API e testes em docs/DASHBOARD.md](docs/DASHBOARD.md). As rotas também estão listadas em [docs/API.md](docs/API.md).
+
 ## Executar com Docker
 
 Requisitos: Docker e Docker Compose v2. Não é necessário instalar Java ou MongoDB nesta opção.
@@ -27,8 +39,6 @@ No Windows PowerShell, a cópia pode ser feita com `Copy-Item .env.example .env`
 O Compose sobe o MongoDB como replica set de um nó. Isso é necessário para gravar a operação e a auditoria na mesma transação. Espere a mensagem de inicialização do Spring antes de abrir a página; a primeira compilação baixa as dependências.
 
 Para parar, use `docker compose down`. O volume mantém os cadastros. A senha de bootstrap só cria o primeiro ADMIN quando ainda não há usuários; mudar a variável depois não redefine senhas existentes.
-
-Para atualizar uma instalação anterior, pare a aplicação, substitua o código na mesma pasta e mantenha seu `.env`. Execute `docker compose up --build` novamente. Mantenha o mesmo nome de pasta/projeto do Compose para reutilizar o volume existente e não use `down -v`, que apaga o volume. As contas antigas continuam válidas; não é necessário limpar o banco para habilitar a exclusão de usuários.
 
 A configuração do Compose é para demonstração local: as portas ficam vinculadas a `127.0.0.1`, e o MongoDB não possui autenticação nessa configuração. Uma implantação em servidor exige autenticação do banco, HTTPS e credenciais próprias.
 
@@ -71,11 +81,7 @@ Para gerar o JAR: `./mvnw clean package`. Para executar: `java -jar target/pediu
 3. Saia e entre como ATENDENTE. Cadastre um cliente com telefone de 10 ou 11 dígitos e CEP de 8 dígitos, sem pontuação.
 4. Registre o pedido e escolha entrega ou retirada.
 5. Entre como GERENTE para encaminhar o pedido, aplicar desconto ou cancelar antes da saída.
-6. Como ATENDENTE, use **Clientes → Editar** para corrigir nome, telefone ou endereço. Os pedidos anteriores mantêm os dados registrados na entrada.
-7. Como GERENTE ou ADMIN, abra **Auditoria** para conferir os eventos. O detalhe do pedido possui um atalho para o histórico daquele registro. Na lista de clientes, o GERENTE pode usar **Consultar alterações**.
-8. Como ADMIN, abra **Usuários → Excluir cadastro** em uma conta ATENDENTE ou GERENTE. Confirme a exclusão e consulte **Consultar alterações e exclusões de usuários** para conferir o evento.
-
-Use **Sair** antes de trocar de conta. Os três perfis usam a mesma tela de login; o perfil é obtido do cadastro salvo no banco. Não basta estar autenticado como ADMIN para usar os botões exclusivos do GERENTE.
+6. Abra **Auditoria** para conferir os eventos. O detalhe do pedido possui um atalho para o histórico daquele registro.
 
 ## Perfis adotados
 
@@ -84,8 +90,8 @@ A tabela explicita as decisões para os pontos em que o enunciado não detalha c
 | Operação | ADMIN | GERENTE | ATENDENTE |
 | --- | :---: | :---: | :---: |
 | Criar usuários e alterar perfis | Sim | Não | Não |
-| Excluir cadastros de ATENDENTE e GERENTE | Sim | Não | Não |
 | Consultar pedidos | Sim | Sim | Sim |
+| Visualizar Dashboard Administrativo | Sim | Sim | Não |
 | Registrar pedidos | Não | Sim | Sim |
 | Corrigir itens de pedido recebido | Não | Sim | Não |
 | Avançar o status e registrar a saída | Não | Sim | Não |
@@ -98,13 +104,7 @@ A tabela explicita as decisões para os pontos em que o enunciado não detalha c
 
 O GERENTE conduz os pedidos; o ATENDENTE registra e acompanha. Para preservar a manutenção do cardápio, ADMIN e GERENTE podem administrá-lo. A exclusão de clientes é lógica e fica com o ATENDENTE, responsável pelo cadastro. Não existe hierarquia que dê ao ADMIN as permissões do GERENTE.
 
-Não há cadastro público. Somente o ADMIN cria usuários e atribui perfis. A própria conta não pode ter seu perfil ou situação alterados por essa operação. Mudanças de perfil, desativações e exclusões são verificadas na próxima requisição, inclusive para sessões já abertas. Um pedido que já estava em execução no instante da mudança não é interrompido retroativamente.
-
-### Exclusão de ATENDENTE e GERENTE
-
-O ADMIN pode excluir essas contas pela tela **Usuários** ou por `DELETE /api/usuarios/{id}`. A exclusão é lógica: remove o cadastro da listagem, marca a data da exclusão, desativa a conta e remove seu hash de senha. Ela não pode ser desfeita pela alteração de perfil. Para suspender e depois reativar uma conta, use a situação **Inativo**.
-
-O login excluído permanece reservado, evitando que uma pessoa nova receba a identificação de ações antigas. Pedidos, responsáveis pela entrada/saída e registros de auditoria permanecem disponíveis. A exclusão gera `EXCLUSAO_USUARIO`, identificando o ADMIN responsável, a conta excluída e a data. Se a auditoria falhar, a exclusão é revertida junto com a remoção da senha. Não é permitido excluir a própria conta ou um cadastro que ainda tenha perfil ADMIN.
+Não há cadastro público. Somente o ADMIN cria usuários e atribui perfis. A própria conta não pode ter seu perfil ou situação alterados por essa operação. Mudanças de perfil e desativações são verificadas na próxima requisição, inclusive para sessões já abertas. Um pedido que já estava em execução no instante da mudança não é interrompido retroativamente.
 
 ## Regras dos pedidos
 
@@ -128,7 +128,7 @@ Exemplo: duas pizzas de R$ 50,00 resultam em R$ 100,00. Um desconto de 10% gera 
 
 As mudanças são calculadas a partir de campos explícitos. Nenhuma senha, hash de senha ou token CSRF entra nos eventos. Endereço e telefone permanecem visíveis aos perfis autorizados porque a conferência dessas alterações é exigida pela atividade. O acesso é restrito e a consulta é paginada; a aplicação não exporta o histórico publicamente.
 
-A gravação do pedido, cliente ou usuário e a inserção do evento compartilham a transação MongoDB. Se a inserção da auditoria falhar, a operação é revertida. As coleções são criadas antes das transações. Não há endpoint ou botão para editar/excluir eventos, e o repositório de auditoria expõe somente inserção e consulta. A proteção se refere à aplicação e às APIs comuns; acesso administrativo direto ao MongoDB deve ser controlado separadamente.
+A gravação do pedido/cliente e a inserção do evento compartilham a transação MongoDB. Se a inserção da auditoria falhar, a operação é revertida. As coleções são criadas antes das transações. Não há endpoint ou botão para editar/excluir eventos, e o repositório de auditoria expõe somente inserção e consulta. A proteção se refere à aplicação e às APIs comuns; acesso administrativo direto ao MongoDB deve ser controlado separadamente.
 
 `@Version` protege as gravações contra alterações concorrentes. Conflitos não sobrescrevem silenciosamente uma versão já modificada. Uma repetição sem mudança de valores não cria um evento fictício de alteração.
 
@@ -198,11 +198,18 @@ Use o roteiro em `docs/ROTEIRO_VIDEO.md` para demonstrar os três perfis e os re
 
 ## Entrega no GitHub
 
-O pacote preparado para GitHub já possui commits e duas branches: `main`, com a base anexada, e `feature/exclusao-usuarios`, com a revisão completa. A branch de entrega selecionada é `feature/exclusao-usuarios`.
+Crie um repositório individual vazio na sua conta. Na pasta deste projeto:
 
-Siga [PUBLICAR_GITHUB.md](docs/PUBLICAR_GITHUB.md) para criar o repositório na sua conta e enviar as duas branches. O guia inclui comandos para PowerShell, conferência da URL remota e os links que devem ser enviados ao professor. A preparação local não cria automaticamente um repositório na sua conta.
+```bash
+git init
+git add .
+git commit -m "Implementa controle de pedidos, perfis e auditoria"
+git branch -M main
+git remote add origin URL_DO_SEU_REPOSITORIO
+git push -u origin main
+```
 
-O `.gitignore` exclui `.env`, logs e arquivos compilados. Envie o link do repositório, o link da branch revisada e o vídeo conforme a orientação do professor.
+Substitua `URL_DO_SEU_REPOSITORIO` pela URL real. O `.gitignore` exclui `.env`, logs e arquivos compilados. Antes do commit, confira `git status` e não inclua senhas. Envie o link do repositório e o vídeo conforme a orientação do professor.
 
 ## Referências técnicas
 

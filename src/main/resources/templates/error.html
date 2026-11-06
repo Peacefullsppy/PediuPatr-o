@@ -1,0 +1,5 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragmentos :: head('Aviso')}"></head>
+<body><header th:replace="~{fragmentos :: topo}"></header><main><div class="vazio"><p class="eyebrow">NÃO FOI POSSÍVEL ABRIR ESTA PÁGINA</p><h1 th:text="${status == 403 ? 'Acesso não permitido' : 'Confira o endereço ou tente novamente'}"></h1><p th:if="${status == 403}">Esta operação não faz parte das permissões da sua conta.</p><a class="botao" th:href="@{/pedidos}">Voltar aos pedidos</a></div></main>
+<footer>PediuPatrão · Controle da pizzaria</footer><script th:src="@{/js/app.js}" defer></script></body></html>

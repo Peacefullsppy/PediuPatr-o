@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragmentos :: head('Cardápio')}"></head>
+<body><header th:replace="~{fragmentos :: topo}"></header><main>
+<p class="eyebrow">CARDÁPIO</p><h1>Produtos da casa</h1><p>Os preços já registrados nos pedidos ficam preservados quando o cardápio muda.</p>
+<details class="painel" sec:authorize="hasAnyRole('ADMIN','GERENTE')"><summary>Cadastrar produto</summary><form method="post" data-api="/api/produtos" data-success="reload"><div class="grade"><label>Nome<input name="nome" maxlength="100" required></label><label>Preço em reais<input name="preco" type="number" min="0.01" max="9999.99" step="0.01" required></label><label>Situação<select name="ativo"><option value="true">Ativo</option><option value="false">Inativo</option></select></label></div><p class="feedback" role="alert"></p><button type="submit">Cadastrar produto</button></form></details>
+<div class="vazio" th:if="${produtos.empty}">Nenhum produto cadastrado.</div><div class="cards"><article class="painel" th:each="p : ${produtos}"><h2 th:text="${p.nome}"></h2><p class="preco" th:text="${'R$ ' + #numbers.formatDecimal(p.preco,1,'POINT',2,'COMMA')}"></p><p th:text="${p.ativo ? 'Disponível para novos pedidos' : 'Produto inativo'}"></p>
+<details sec:authorize="hasAnyRole('ADMIN','GERENTE')"><summary>Editar produto</summary><form method="post" th:data-api="@{/api/produtos/{id}(id=${p.id})}" data-method="PUT" data-success="reload"><label>Nome<input name="nome" maxlength="100" required th:value="${p.nome}"></label><label>Preço<input name="preco" type="number" min="0.01" max="9999.99" step="0.01" required th:value="${p.preco}"></label><label>Situação<select name="ativo"><option value="true" th:selected="${p.ativo}">Ativo</option><option value="false" th:selected="${!p.ativo}">Inativo</option></select></label><p class="feedback" role="alert"></p><button type="submit">Salvar</button></form></details></article></div>
+</main>
+<footer>PediuPatrão · Controle da pizzaria</footer><script th:src="@{/js/app.js}" defer></script></body></html>
