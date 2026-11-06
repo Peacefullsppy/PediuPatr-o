@@ -196,24 +196,4 @@ Os cenários cobrem autenticação, roles, bloqueio de ADMIN e ATENDENTE, CSRF, 
 
 Use o roteiro em `docs/ROTEIRO_VIDEO.md` para demonstrar os três perfis e os registros correspondentes. Execute o projeto e entenda cada regra antes de gravar. Não use dados pessoais reais na demonstração.
 
-## Entrega no GitHub
 
-Crie um repositório individual vazio na sua conta. Na pasta deste projeto:
-
-```bash
-git init
-git add .
-git commit -m "Implementa controle de pedidos, perfis e auditoria"
-git branch -M main
-git remote add origin URL_DO_SEU_REPOSITORIO
-git push -u origin main
-```
-
-Substitua `URL_DO_SEU_REPOSITORIO` pela URL real. O `.gitignore` exclui `.env`, logs e arquivos compilados. Antes do commit, confira `git status` e não inclua senhas. Envie o link do repositório e o vídeo conforme a orientação do professor.
-
-## Referências técnicas
-
-- [Spring Boot 3.5 — requisitos](https://docs.spring.io/spring-boot/3.5/system-requirements.html)
-- [Spring Security — autorização por método](https://docs.spring.io/spring-security/reference/servlet/authorization/method-security.html)
-- [Spring Security — CSRF](https://docs.spring.io/spring-security/reference/servlet/exploits/csrf.html)
-- [Spring Data MongoDB — transações](https://docs.spring.io/spring-data/mongodb/reference/mongodb/client-session-transactions.html)
