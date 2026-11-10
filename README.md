@@ -1,3 +1,6 @@
+#LINK DO VÍDEO PARA O YOUTUBE: https://www.youtube.com/watch?v=fRBXTED3sDY
+
+
 # PediuPatrão
 
 Sistema de uma pizzaria para registrar clientes, manter o cardápio e acompanhar pedidos. A atividade foi implementada em Java 17, Spring Boot 3.5.16, Spring Security, Thymeleaf e MongoDB.
